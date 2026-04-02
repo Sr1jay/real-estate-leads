@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Lead {
+  id             String    @id @default(uuid())
+  raw_message    String
+  requirement    String
+  budget         String
+  status         String    @default("new")
+  created_at     DateTime  @default(now())
+  last_contacted DateTime?
+}
