@@ -146,6 +146,22 @@ export default function LeadsList() {
             </svg>
           </button>
         </div>
+
+        {/* Export */}
+        <a
+          href={`/api/leads/export?${new URLSearchParams(
+            Object.fromEntries(
+              Object.entries({ search, status, source }).filter(([, v]) => v)
+            )
+          ).toString()}`}
+          download
+          title="Export to Excel"
+          className="flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 transition-colors shrink-0"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+        </a>
       </div>
 
       <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-3">
