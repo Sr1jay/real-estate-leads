@@ -15,6 +15,7 @@ model Lead {
   source      String?
   status      String      @default("new")
   notes       String?
+  followUpAt  DateTime?
   createdAt   DateTime    @default(now())
   leadNotes   LeadNote[]
 }

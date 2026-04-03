@@ -6,6 +6,7 @@ export type Lead = {
   source: string | null;
   status: string;
   notes: string | null;
+  followUpAt: Date | string | null;
   createdAt: Date | string;
 };
 
@@ -25,6 +26,20 @@ export function getActionColor(tag: string): string {
 export function getDaysSince(date: Date | string): number {
   const then = new Date(date).getTime();
   return Math.floor((Date.now() - then) / (1000 * 60 * 60 * 24));
+}
+
+export type FollowUpUrgency = "overdue" | "today" | "upcoming" | null;
+
+export function getFollowUpUrgency(lead: Lead): FollowUpUrgency {
+  if (!lead.followUpAt || lead.status === "closed") return null;
+  const due = new Date(lead.followUpAt);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  due.setHours(0, 0, 0, 0);
+  const diff = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  if (diff < 0) return "overdue";
+  if (diff === 0) return "today";
+  return "upcoming";
 }
 
 export const SUGGESTED_REPLY =

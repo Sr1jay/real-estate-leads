@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import LeadActions from "./LeadActions";
 import NotesTimeline from "./NotesTimeline";
+import FollowUpSection from "./FollowUpSection";
 
 export const dynamic = "force-dynamic";
 
@@ -103,6 +104,12 @@ export default async function LeadDetailPage({
         </p>
         <LeadActions leadId={String(lead.id)} leadStatus={lead.status} suggestedReply={SUGGESTED_REPLY} />
       </div>
+
+      {/* Follow-up reminder */}
+      <FollowUpSection
+        leadId={lead.id}
+        followUpAt={lead.followUpAt ? lead.followUpAt.toISOString() : null}
+      />
 
       {/* Notes timeline */}
       <NotesTimeline leadId={lead.id} />
