@@ -112,8 +112,8 @@ export default function LeadsList() {
         />
       </div>
 
-      {/* Filters + view toggle */}
-      <div className="flex gap-2 mb-5">
+      {/* Filters */}
+      <div className="flex gap-2 mb-3">
         <select value={status} onChange={(e) => setStatus(e.target.value)} className={filterSelect}>
           <option value="">All statuses</option>
           {STATUSES.map((s) => (
@@ -124,49 +124,54 @@ export default function LeadsList() {
           <option value="">All sources</option>
           {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
-
-        {/* List / Board toggle */}
-        <div className="flex rounded-lg border border-slate-200 bg-white overflow-hidden shrink-0">
-          <button
-            onClick={() => setView("list")}
-            title="List view"
-            className={`px-3 py-2 transition-colors ${view === "list" ? "bg-indigo-600 text-white" : "text-slate-500 hover:bg-slate-50"}`}
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-            </svg>
-          </button>
-          <button
-            onClick={() => setView("board")}
-            title="Board view"
-            className={`px-3 py-2 transition-colors ${view === "board" ? "bg-indigo-600 text-white" : "text-slate-500 hover:bg-slate-50"}`}
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 17V7m0 10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m0 10a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 7a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m0 10V7m0 10a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Export */}
-        <a
-          href={`/api/leads/export?${new URLSearchParams(
-            Object.fromEntries(
-              Object.entries({ search, status, source }).filter(([, v]) => v)
-            )
-          ).toString()}`}
-          download
-          title="Export to Excel"
-          className="flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 transition-colors shrink-0"
-        >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-          </svg>
-        </a>
       </div>
 
-      <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-3">
-        {loading ? "Loading…" : `${leads.length} lead${leads.length !== 1 ? "s" : ""}`}
-      </p>
+      {/* Count + view toggle + export */}
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">
+          {loading ? "Loading…" : `${leads.length} lead${leads.length !== 1 ? "s" : ""}`}
+        </p>
+        <div className="flex items-center gap-2">
+          {/* List / Board toggle */}
+          <div className="flex rounded-lg border border-slate-200 bg-white overflow-hidden">
+            <button
+              onClick={() => setView("list")}
+              title="List view"
+              className={`px-3 py-2 transition-colors ${view === "list" ? "bg-indigo-600 text-white" : "text-slate-500 hover:bg-slate-50"}`}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setView("board")}
+              title="Board view"
+              className={`px-3 py-2 transition-colors ${view === "board" ? "bg-indigo-600 text-white" : "text-slate-500 hover:bg-slate-50"}`}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 17V7m0 10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m0 10a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 7a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m0 10V7m0 10a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Export */}
+          <a
+            href={`/api/leads/export?${new URLSearchParams(
+              Object.fromEntries(
+                Object.entries({ search, status, source }).filter(([, v]) => v)
+              )
+            ).toString()}`}
+            download
+            title="Export to Excel"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-500 hover:text-indigo-600 hover:border-indigo-300 transition-colors"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            Export
+          </a>
+        </div>
+      </div>
 
       {!loading && leads.length === 0 ? (
         <EmptyState hasFilters={!!(search || status || source)} />
