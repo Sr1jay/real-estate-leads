@@ -53,10 +53,10 @@ export async function GET(request: NextRequest) {
     const wb = utils.book_new();
     utils.book_append_sheet(wb, ws, "Leads");
 
-    const buffer: Buffer = write(wb, { type: "buffer", bookType: "xlsx" });
+    const buffer = write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
     const date = new Date().toISOString().slice(0, 10);
 
-    return new Response(buffer, {
+    return new Response(new Uint8Array(buffer), {
       headers: {
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
