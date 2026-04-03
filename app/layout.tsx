@@ -17,15 +17,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${geist.variable} h-full`}>
-      <body className="min-h-full bg-gray-50 text-gray-900 font-sans antialiased">
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-          <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-            <Link href="/" className="text-lg font-bold text-blue-600 tracking-tight">
+      <body className="min-h-full bg-slate-50 text-slate-900 font-sans antialiased">
+        <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+          <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+            <Link href="/" className="text-lg font-bold tracking-tight text-indigo-600">
               Leadar
             </Link>
             <Link
               href="/add"
-              className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              className="bg-indigo-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
             >
               + Add Lead
             </Link>

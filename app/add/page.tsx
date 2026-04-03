@@ -22,22 +22,18 @@ export default function AddLeadPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.phone.trim()) return;
-
     setLoading(true);
     setError("");
-
     try {
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error ?? "Failed to create lead");
       }
-
       router.push("/");
       router.refresh();
     } catch (err) {
@@ -46,80 +42,69 @@ export default function AddLeadPage() {
     }
   }
 
-  const field = "w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
+  const fieldBase =
+    "w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition";
 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Add New Lead</h1>
-        <p className="text-sm text-gray-500 mt-1">Enter the lead&apos;s contact details.</p>
+        <h1 className="text-2xl font-bold text-slate-900">New Lead</h1>
+        <p className="text-sm text-slate-500 mt-0.5">Fill in what you know — only phone is required.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl p-5 space-y-4">
-        {/* Phone — required */}
+      <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
+        {/* Phone */}
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-            Phone <span className="text-red-500">*</span>
+          <label htmlFor="phone" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+            Phone <span className="text-rose-500">*</span>
           </label>
           <input
-            id="phone"
-            name="phone"
-            type="tel"
-            value={form.phone}
-            onChange={handleChange}
+            id="phone" name="phone" type="tel"
+            value={form.phone} onChange={handleChange}
             placeholder="+91 98765 43210"
-            required
-            disabled={loading}
-            className={field}
+            required disabled={loading}
+            className={fieldBase}
           />
         </div>
 
         {/* Name */}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="name" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
             Name
           </label>
           <input
-            id="name"
-            name="name"
-            type="text"
-            value={form.name}
-            onChange={handleChange}
+            id="name" name="name" type="text"
+            value={form.name} onChange={handleChange}
             placeholder="Rahul Sharma"
             disabled={loading}
-            className={field}
+            className={fieldBase}
           />
         </div>
 
         {/* Project */}
         <div>
-          <label htmlFor="projectName" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="projectName" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
             Project / Interest
           </label>
           <input
-            id="projectName"
-            name="projectName"
-            type="text"
-            value={form.projectName}
-            onChange={handleChange}
+            id="projectName" name="projectName" type="text"
+            value={form.projectName} onChange={handleChange}
             placeholder="2BHK in Wakad"
             disabled={loading}
-            className={field}
+            className={fieldBase}
           />
         </div>
 
         {/* Source */}
         <div>
-          <label htmlFor="source" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="source" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
             Source
           </label>
           <select
-            id="source"
-            name="source"
-            value={form.source}
-            onChange={handleChange}
+            id="source" name="source"
+            value={form.source} onChange={handleChange}
             disabled={loading}
-            className={field}
+            className={fieldBase}
           >
             <option value="">Select source…</option>
             <option value="WhatsApp">WhatsApp</option>
@@ -134,28 +119,29 @@ export default function AddLeadPage() {
 
         {/* Notes */}
         <div>
-          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="notes" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
             Notes
           </label>
           <textarea
-            id="notes"
-            name="notes"
-            value={form.notes}
-            onChange={handleChange}
+            id="notes" name="notes"
+            value={form.notes} onChange={handleChange}
             placeholder="Budget ₹60L, needs possession by March…"
-            rows={3}
-            disabled={loading}
-            className={`${field} resize-none`}
+            rows={3} disabled={loading}
+            className={`${fieldBase} resize-none`}
           />
         </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && (
+          <div className="rounded-lg bg-rose-50 border border-rose-200 px-3 py-2.5">
+            <p className="text-sm text-rose-700">{error}</p>
+          </div>
+        )}
 
         <div className="flex gap-3 pt-1">
           <button
             type="submit"
             disabled={loading || !form.phone.trim()}
-            className="flex-1 bg-blue-600 text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 bg-indigo-600 text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? "Creating…" : "Create Lead"}
           </button>
@@ -163,7 +149,7 @@ export default function AddLeadPage() {
             type="button"
             onClick={() => router.back()}
             disabled={loading}
-            className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            className="px-5 py-2.5 text-sm font-semibold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
           >
             Cancel
           </button>

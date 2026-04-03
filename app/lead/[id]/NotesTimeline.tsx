@@ -9,10 +9,10 @@ interface Note {
 }
 
 export default function NotesTimeline({ leadId }: { leadId: number }) {
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [notes, setNotes]   = useState<Note[]>([]);
   const [content, setContent] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [saving, setSaving]  = useState(false);
+  const [error, setError]    = useState("");
 
   async function loadNotes() {
     const res = await fetch(`/api/leads/${leadId}/notes`);
@@ -49,50 +49,49 @@ export default function NotesTimeline({ leadId }: { leadId: number }) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-4">
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Notes Timeline</p>
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Activity &amp; Notes</p>
 
-      {/* Add note form */}
+      {/* Add note */}
       <form onSubmit={handleAdd} className="flex gap-2">
         <input
           type="text"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Add a note…"
+          placeholder="Log a call, visit, or follow-up…"
           disabled={saving}
-          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
         />
         <button
           type="submit"
           disabled={saving || !content.trim()}
-          className="bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="bg-indigo-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {saving ? "…" : "Add"}
         </button>
       </form>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="text-sm text-rose-600">{error}</p>
+      )}
 
       {/* Timeline */}
       {notes.length === 0 ? (
-        <p className="text-sm text-gray-400 py-2">No notes yet.</p>
+        <p className="text-sm text-slate-400 py-1">No activity yet. Log a note above.</p>
       ) : (
-        <ol className="space-y-3">
+        <ol className="space-y-3 border-l-2 border-slate-100 ml-1 pl-4">
           {notes.map((note) => (
-            <li key={note.id} className="flex gap-3">
-              <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-400" />
-              <div>
-                <p className="text-sm text-gray-800">{note.content}</p>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  {new Date(note.createdAt).toLocaleString("en-IN", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
-              </div>
+            <li key={note.id}>
+              <p className="text-sm text-slate-800 leading-relaxed">{note.content}</p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {new Date(note.createdAt).toLocaleString("en-IN", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
             </li>
           ))}
         </ol>
