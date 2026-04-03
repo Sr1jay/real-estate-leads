@@ -8,11 +8,12 @@ datasource db {
 }
 
 model Lead {
-  id             String    @id @default(uuid())
-  raw_message    String
-  requirement    String
-  budget         String
-  status         String    @default("new")
-  created_at     DateTime  @default(now())
-  last_contacted DateTime?
+  id          Int      @id @default(autoincrement())
+  name        String?
+  phone       String
+  projectName String?
+  source      String?
+  status      String   @default("new")
+  notes       String?
+  createdAt   DateTime @default(now())
 }

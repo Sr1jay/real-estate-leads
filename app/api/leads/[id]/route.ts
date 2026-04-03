@@ -4,7 +4,12 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  const id = parseInt((await params).id, 10);
+
+  if (isNaN(id)) {
+    return Response.json({ error: "Invalid id" }, { status: 400 });
+  }
+
   const lead = await prisma.lead.findUnique({ where: { id } });
 
   if (!lead) {

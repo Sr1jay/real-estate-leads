@@ -1,11 +1,5 @@
 import prisma from "@/lib/prisma";
-import {
-  getActionTag,
-  getActionColor,
-  getDaysSince,
-  sortByUrgency,
-  type Lead,
-} from "@/lib/utils";
+import { getActionTag, getActionColor, getDaysSince, sortByUrgency, type Lead } from "@/lib/utils";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +11,7 @@ const colorClasses: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const rawLeads = await prisma.lead.findMany({ orderBy: { created_at: "desc" } });
+  const rawLeads = await prisma.lead.findMany({ orderBy: { createdAt: "desc" } });
   const leads = sortByUrgency(rawLeads as Lead[]);
 
   return (
@@ -33,7 +27,7 @@ export default async function HomePage() {
         <div className="text-center py-16 text-gray-400">
           <p className="text-4xl mb-3">📋</p>
           <p className="text-lg font-medium text-gray-500">No leads yet</p>
-          <p className="text-sm mt-1">Paste a WhatsApp message to add your first lead.</p>
+          <p className="text-sm mt-1">Add your first lead to get started.</p>
           <Link
             href="/add"
             className="mt-4 inline-block bg-blue-600 text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -44,15 +38,9 @@ export default async function HomePage() {
       ) : (
         <ul className="space-y-3">
           {leads.map((lead) => {
-            const tag = getActionTag(lead);
+            const tag = getActionTag(lead as Lead);
             const color = getActionColor(tag);
-            const days = getDaysSince(lead.last_contacted);
-            const daysAgo =
-              lead.last_contacted === null
-                ? "Never contacted"
-                : days === 0
-                ? "Contacted today"
-                : `Last contacted ${days} day${days !== 1 ? "s" : ""} ago`;
+            const daysAgo = getDaysSince(lead.createdAt);
 
             return (
               <li key={lead.id}>
@@ -62,17 +50,21 @@ export default async function HomePage() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-400 truncate leading-relaxed">
-                        {lead.raw_message.substring(0, 50)}
-                        {lead.raw_message.length > 50 ? "…" : ""}
+                      <p className="text-base font-semibold text-gray-900">
+                        {lead.name ?? lead.phone}
                       </p>
-                      <p className="text-base font-semibold text-gray-900 mt-1">
-                        {lead.requirement}
-                      </p>
-                      {lead.budget !== "Not specified" && (
-                        <p className="text-sm text-gray-600 mt-0.5">Budget: {lead.budget}</p>
+                      {lead.name && (
+                        <p className="text-sm text-gray-400">{lead.phone}</p>
                       )}
-                      <p className="text-xs text-gray-400 mt-2">{daysAgo}</p>
+                      {lead.projectName && (
+                        <p className="text-sm text-gray-600 mt-0.5">{lead.projectName}</p>
+                      )}
+                      {lead.source && (
+                        <p className="text-xs text-gray-400 mt-0.5">via {lead.source}</p>
+                      )}
+                      <p className="text-xs text-gray-400 mt-2">
+                        Added {daysAgo === 0 ? "today" : `${daysAgo} day${daysAgo !== 1 ? "s" : ""} ago`}
+                      </p>
                     </div>
                     <div className="shrink-0">
                       <span

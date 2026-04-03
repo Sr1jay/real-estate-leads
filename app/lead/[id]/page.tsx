@@ -1,11 +1,5 @@
 import prisma from "@/lib/prisma";
-import {
-  getActionTag,
-  getActionColor,
-  getDaysSince,
-  SUGGESTED_REPLY,
-  type Lead,
-} from "@/lib/utils";
+import { getActionTag, getActionColor, SUGGESTED_REPLY, type Lead } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import LeadActions from "./LeadActions";
 
@@ -28,34 +22,32 @@ export default async function LeadDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const id = parseInt((await params).id, 10);
+
+  if (isNaN(id)) notFound();
+
   const lead = await prisma.lead.findUnique({ where: { id } });
 
-  if (!lead) {
-    notFound();
-  }
+  if (!lead) notFound();
 
   const tag = getActionTag(lead as Lead);
   const color = getActionColor(tag);
-  const days = getDaysSince(lead.last_contacted);
-  const daysAgo =
-    lead.last_contacted === null
-      ? "Never contacted"
-      : days === 0
-      ? "Contacted today"
-      : `Last contacted ${days} day${days !== 1 ? "s" : ""} ago`;
 
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-start gap-3">
         <div className="flex-1">
-          <h1 className="text-xl font-bold text-gray-900">{lead.requirement}</h1>
+          <h1 className="text-xl font-bold text-gray-900">
+            {lead.name ?? lead.phone}
+          </h1>
           <div className="flex items-center gap-2 mt-1">
             <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusBadge[lead.status] ?? statusBadge.new}`}>
               {lead.status}
             </span>
-            <span className="text-xs text-gray-400">{daysAgo}</span>
+            {lead.name && (
+              <span className="text-sm text-gray-500">{lead.phone}</span>
+            )}
           </div>
         </div>
       </div>
@@ -66,14 +58,36 @@ export default async function LeadDetailPage({
         <p className="text-base font-bold">{tag}</p>
       </div>
 
-      {/* Raw Message */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Original Message</p>
-        <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{lead.raw_message}</p>
-        {lead.budget !== "Not specified" && (
-          <p className="mt-3 text-sm text-gray-500">
-            <span className="font-medium text-gray-700">Budget:</span> {lead.budget}
-          </p>
+      {/* Lead Details */}
+      <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Details</p>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+          <span className="text-gray-500">Phone</span>
+          <span className="text-gray-900 font-medium">{lead.phone}</span>
+          {lead.projectName && (
+            <>
+              <span className="text-gray-500">Project</span>
+              <span className="text-gray-900">{lead.projectName}</span>
+            </>
+          )}
+          {lead.source && (
+            <>
+              <span className="text-gray-500">Source</span>
+              <span className="text-gray-900">{lead.source}</span>
+            </>
+          )}
+          <span className="text-gray-500">Added</span>
+          <span className="text-gray-900">
+            {new Date(lead.createdAt).toLocaleDateString("en-IN", {
+              day: "numeric", month: "short", year: "numeric",
+            })}
+          </span>
+        </div>
+        {lead.notes && (
+          <div className="pt-2 border-t border-gray-100">
+            <p className="text-xs text-gray-400 mb-1">Notes</p>
+            <p className="text-sm text-gray-800 whitespace-pre-wrap">{lead.notes}</p>
+          </div>
         )}
       </div>
 
@@ -81,7 +95,7 @@ export default async function LeadDetailPage({
       <div className="bg-white border border-gray-200 rounded-xl p-4">
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Suggested Reply</p>
         <p className="text-sm text-gray-800 leading-relaxed italic">&ldquo;{SUGGESTED_REPLY}&rdquo;</p>
-        <LeadActions leadId={id} leadStatus={lead.status} suggestedReply={SUGGESTED_REPLY} />
+        <LeadActions leadId={String(lead.id)} leadStatus={lead.status} suggestedReply={SUGGESTED_REPLY} />
       </div>
     </div>
   );
