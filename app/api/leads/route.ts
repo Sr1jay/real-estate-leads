@@ -3,10 +3,25 @@ import prisma from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
-    const status = request.nextUrl.searchParams.get("status") ?? undefined;
+    const { searchParams } = request.nextUrl;
+    const status = searchParams.get("status") ?? undefined;
+    const source = searchParams.get("source") ?? undefined;
+    const search = searchParams.get("search")?.trim() ?? undefined;
 
     const leads = await prisma.lead.findMany({
-      where: status ? { status } : undefined,
+      where: {
+        ...(status ? { status } : {}),
+        ...(source ? { source } : {}),
+        ...(search
+          ? {
+              OR: [
+                { name: { contains: search, mode: "insensitive" } },
+                { phone: { contains: search } },
+                { projectName: { contains: search, mode: "insensitive" } },
+              ],
+            }
+          : {}),
+      },
       orderBy: { createdAt: "desc" },
     });
 

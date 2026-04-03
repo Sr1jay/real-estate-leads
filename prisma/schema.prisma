@@ -8,12 +8,21 @@ datasource db {
 }
 
 model Lead {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   name        String?
   phone       String
   projectName String?
   source      String?
-  status      String   @default("new")
+  status      String      @default("new")
   notes       String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime    @default(now())
+  leadNotes   LeadNote[]
+}
+
+model LeadNote {
+  id        Int      @id @default(autoincrement())
+  leadId    Int
+  content   String
+  createdAt DateTime @default(now())
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
 }

@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { getActionTag, getActionColor, SUGGESTED_REPLY, type Lead } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import LeadActions from "./LeadActions";
+import NotesTimeline from "./NotesTimeline";
 
 export const dynamic = "force-dynamic";
 
@@ -97,6 +98,9 @@ export default async function LeadDetailPage({
         <p className="text-sm text-gray-800 leading-relaxed italic">&ldquo;{SUGGESTED_REPLY}&rdquo;</p>
         <LeadActions leadId={String(lead.id)} leadStatus={lead.status} suggestedReply={SUGGESTED_REPLY} />
       </div>
+
+      {/* Notes Timeline */}
+      <NotesTimeline leadId={lead.id} />
     </div>
   );
 }
