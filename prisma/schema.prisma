@@ -20,6 +20,18 @@ model Lead {
   leadNotes   LeadNote[]
 }
 
+model Property {
+  id          Int      @id @default(autoincrement())
+  title       String
+  type        String?
+  location    String
+  priceMin    Int?
+  priceMax    Int?
+  status      String   @default("available")
+  description String?
+  createdAt   DateTime @default(now())
+}
+
 model LeadNote {
   id        Int      @id @default(autoincrement())
   leadId    Int

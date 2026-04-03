@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { getActionTag, getActionColor, SUGGESTED_REPLY, type Lead } from "@/lib/utils";
+import { matchPropertiesForLead, type Property } from "@/lib/matching";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import LeadActions from "./LeadActions";
@@ -28,11 +29,26 @@ export default async function LeadDetailPage({
   const id = parseInt((await params).id, 10);
   if (isNaN(id)) notFound();
 
-  const lead = await prisma.lead.findUnique({ where: { id } });
+  const [lead, allProperties] = await Promise.all([
+    prisma.lead.findUnique({ where: { id } }),
+    prisma.property.findMany(),
+  ]);
   if (!lead) notFound();
 
-  const tag   = getActionTag(lead as Lead);
-  const color = getActionColor(tag);
+  const tag            = getActionTag(lead as Lead);
+  const color          = getActionColor(tag);
+  const matchedProps   = matchPropertiesForLead(lead as Lead, allProperties as Property[]);
+
+  const propStatusBadge: Record<string, string> = {
+    available: "bg-emerald-100 text-emerald-700",
+    hold:      "bg-amber-100 text-amber-700",
+    sold:      "bg-slate-100 text-slate-500",
+  };
+
+  function fmt(n: number | null) {
+    if (n == null) return null;
+    return n >= 100 ? `₹${(n / 100).toFixed(n % 100 === 0 ? 0 : 1)}Cr` : `₹${n}L`;
+  }
 
   return (
     <div className="space-y-4">
@@ -110,6 +126,46 @@ export default async function LeadDetailPage({
         leadId={lead.id}
         followUpAt={lead.followUpAt ? lead.followUpAt.toISOString() : null}
       />
+
+      {/* Matched Properties */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
+          Matched Properties{matchedProps.length > 0 ? ` (${matchedProps.length})` : ""}
+        </p>
+        {matchedProps.length === 0 ? (
+          <p className="text-sm text-slate-400">
+            No matches yet. Add properties to your inventory and they&apos;ll appear here when they align with this lead&apos;s interest.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {matchedProps.map((prop) => {
+              const min   = fmt(prop.priceMin);
+              const max   = fmt(prop.priceMax);
+              const price = min && max ? `${min} – ${max}` : min ?? max ?? null;
+              return (
+                <li key={prop.id}>
+                  <Link
+                    href={`/properties/${prop.id}`}
+                    className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3.5 py-3 hover:border-indigo-200 hover:bg-white transition-all"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-slate-900 truncate">{prop.title}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5 text-xs text-slate-400 flex-wrap">
+                        <span>{prop.location}</span>
+                        {prop.type  && <span>· {prop.type}</span>}
+                        {price      && <span>· {price}</span>}
+                      </div>
+                    </div>
+                    <span className={`shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full ${propStatusBadge[prop.status] ?? propStatusBadge.available}`}>
+                      {prop.status.charAt(0).toUpperCase() + prop.status.slice(1)}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
 
       {/* Notes timeline */}
       <NotesTimeline leadId={lead.id} />
